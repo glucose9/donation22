@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💝 마음을 전해주세요</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            min-height: 100vh;
+            background: #0a0f0a;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 배경 애니메이션 */
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(125deg, #00b09b 0%, #96c93d 25%, #00d084 50%, #00a67e 75%, #22c55e 100%);
+            background-size: 300% 300%;
+            animation: gradientShift 15s ease infinite;
+            opacity: 0.9;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.4) 100%);
+            pointer-events: none;
+        }
+
+        /* 플로팅 파티클 */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0;
+            animation: float 10s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { 
+                opacity: 0;
+                transform: translateY(100vh) scale(0);
+            }
+            10% {
+                opacity: 1;
+                transform: translateY(90vh) scale(1);
+            }
+            90% {
+                opacity: 1;
+                transform: translateY(10vh) scale(1);
+            }
+        }
+
+        .container {
+            max-width: 450px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* 메인 카드 */
+        .main-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 30px;
+            padding: 40px 30px;
+            box-shadow: 
+                0 8px 32px 0 rgba(31, 38, 135, 0.37),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(30px);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0);
+            }
+        }
+
+        /* 이모지 애니메이션 */
+        .emoji-header {
+            text-align: center;
+            font-size: 60px;
+            margin-bottom: 20px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-10px) scale(1.1); }
+        }
+
+        /* 헤더 텍스트 */
+        .header-text {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 2px 20px rgba(255,255,255,0.3);
+        }
+
+        .header-subtitle {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 300;
+            line-height: 1.5;
+        }
+
+        /* 금액 섹션 */
+        .amount-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .amount-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .amount-btn {
+            padding: 18px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 18px;
+            font-size: 16px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .amount-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.5s ease;
+        }
+
+        .amount-btn:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 
+                0 10px 30px rgba(255, 255, 255, 0.2),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+        }
+
+        .amount-btn:hover::before {
+            transform: translate(-50%, -50%) scale(2);
+        }
+
+        .amount-btn.selected {
+            background: linear-gradient(135deg, rgba(34,197,94,0.3) 0%, rgba(0,176,155,0.2) 100%);
+            border: 1px solid rgba(34, 197, 94, 0.5);
+            color: white;
+            box-shadow: 
+                0 0 30px rgba(34, 197, 94, 0.4),
+                inset 0 0 20px rgba(34, 197, 94, 0.1);
+        }
+
+        .custom-input {
+            width: 100%;
+            padding: 18px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 18px;
+            font-size: 16px;
+            color: white;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .custom-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .custom-input:focus {
+            outline: none;
+            background: rgba(34, 197, 94, 0.08);
+            border-color: rgba(34, 197, 94, 0.3);
+            box-shadow: 0 0 30px rgba(34, 197, 94, 0.2);
+        }
+
+        /* 계좌 정보 섹션 */
+        .account-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .account-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .account-info {
+            position: relative;
+            z-index: 1;
+        }
+
+        .bank-name {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .account-number {
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .account-holder {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 15px;
+        }
+
+        .copy-btn {
+            width: 100%;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 14px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.2);
+        }
+
+        .copy-btn.copied {
+            background: linear-gradient(135deg, #22c55e 0%, #00d084 100%);
+            border-color: transparent;
+        }
+
+        /* 결제 방법 버튼들 */
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .pay-btn {
+            padding: 14px;
+            border-radius: 14px;
+            border: none;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pay-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%) scale(0);
+            border-radius: 50%;
+            transition: transform 0.5s ease;
+        }
+
+        .pay-btn:active::after {
+            transform: translate(-50%, -50%) scale(2);
+        }
+
+        .pay-btn.kakao {
+            background: #FEE500;
+            color: #3C1E1E;
+        }
+
+        .pay-btn.toss {
+            background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%);
+            color: white;
+        }
+
+        .pay-btn.bank {
+            background: rgba(34, 197, 94, 0.15);
+            backdrop-filter: blur(10px);
+            color: white;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .pay-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 메시지 섹션 */
+        .message-section {
+            text-align: center;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .message-icon {
+            font-size: 35px;
+            margin-bottom: 12px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .message-text {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+        }
+
+        /* 플로팅 하트 */
+        .floating-hearts {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 20px;
+            animation: floatHeart 4s ease-in-out;
+            opacity: 0;
+        }
+
+        @keyframes floatHeart {
+            0% {
+                opacity: 0;
+                transform: translateY(0) scale(0);
+            }
+            15% {
+                opacity: 1;
+                transform: translateY(-20px) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-150px) scale(1.5) rotate(15deg);
+            }
+        }
+
+        /* 반응형 */
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .main-card {
+                padding: 30px 20px;
+            }
+            
+            .header-title {
+                font-size: 24px;
+            }
+            
+            .amount-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 특수 효과 */
+        .shimmer {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+    <div class="overlay"></div>
+    
+    <!-- 플로팅 파티클 -->
+    <div class="particles" id="particles"></div>
+    
+    <div class="container">
+        <div class="main-card">
+            <div class="emoji-header">💚</div>
+            
+            <div class="header-text">
+                <h1 class="header-title">마음을 전해주세요</h1>
+                <p class="header-subtitle">당신의 따뜻한 마음이<br>세상을 더 푸르게 만듭니다</p>
+            </div>
+
+            <div class="amount-section">
+                <div class="section-title">후원 금액</div>
+                <div class="amount-grid">
+                    <button class="amount-btn" onclick="selectAmount(this, 5000)">5,000원</button>
+                    <button class="amount-btn" onclick="selectAmount(this, 10000)">10,000원</button>
+                    <button class="amount-btn" onclick="selectAmount(this, 30000)">30,000원</button>
+                    <button class="amount-btn" onclick="selectAmount(this, 50000)">50,000원</button>
+                </div>
+                <input type="text" 
+                       class="custom-input" 
+                       placeholder="직접 입력하기" 
+                       onkeyup="formatAmount(this)"
+                       onfocus="clearSelection()">
+            </div>
+
+            <div class="account-card">
+                <div class="shimmer"></div>
+                <div class="account-info">
+                    <div class="bank-name">HANA BANK</div>
+                    <div class="account-number" id="accountNumber">36691024309407</div>
+                    <div class="account-holder">예금주: 구건우</div>
+                    <button class="copy-btn" onclick="copyAccount()">
+                        <span>📋</span>
+                        <span id="copyText">계좌번호 복사하기</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="payment-methods" style="display: flex; justify-content: center; margin-bottom: 25px;">
+                <button class="pay-btn kakao" onclick="openKakaoPay()" style="width: 200px; padding: 18px; font-size: 15px;">
+                    💛 카카오페이로 송금
+                </button>
+            </div>
+            
+            <!-- 추가 송금 옵션 -->
+            <div style="text-align: center; margin-top: 15px;">
+                <a href="https://qr.kakaopay.com/FPkFkMJb4" 
+                   style="display: inline-block; padding: 12px 24px; background: #FEE500; color: #3C1E1E; text-decoration: none; border-radius: 10px; font-weight: 600; font-size: 14px; margin: 0 5px;">
+                   💛 카카오페이 QR
+                </a>
+                <a href="https://toss.me/구건우" 
+                   style="display: inline-block; padding: 12px 24px; background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%); color: white; text-decoration: none; border-radius: 10px; font-weight: 600; font-size: 14px; margin: 0 5px;">
+                   💚 토스아이디
+                </a>
+            </div>
+
+            <div class="message-section">
+                <div class="message-icon">🌱</div>
+                <div class="message-text">
+                    소중한 마음 감사합니다<br>
+                    투명하고 정직하게 사용하겠습니다
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="floating-hearts" id="hearts"></div>
+
+    <script>
+        // 파티클 생성
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 10 + 's';
+                particle.style.animationDuration = (10 + Math.random() * 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // 금액 선택
+        let selectedAmount = 0;
+        function selectAmount(btn, amount) {
+            document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedAmount = amount;
+            document.querySelector('.custom-input').value = '';
+            createHeart(btn);
+        }
+
+        // 선택 초기화
+        function clearSelection() {
+            document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected'));
+            selectedAmount = 0;
+        }
+
+        // 금액 포맷팅
+        function formatAmount(input) {
+            let value = input.value.replace(/[^\d]/g, '');
+            if (value) {
+                selectedAmount = parseInt(value);
+                value = parseInt(value).toLocaleString();
+                input.value = value + '원';
+            }
+        }
+
+        // 하나은행 앱 열기
+        function openBankApp() {
+            const amount = selectedAmount || 10000;
+            
+            // 하나은행 앱 딥링크
+            const hanaUrl = `hanabank://transfer?amount=${amount}&account=36691024309407`;
+            
+            if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                // 모바일에서 하나은행 앱 열기
+                window.location.href = hanaUrl;
+                
+                setTimeout(() => {
+                    if (document.hasFocus()) {
+                        // 앱이 없으면 설치 페이지로
+                        if (confirm('하나은행 앱을 설치하시겠습니까?')) {
+                            if (/Android/i.test(navigator.userAgent)) {
+                                window.location.href = 'https://play.google.com/store/apps/details?id=com.hanabank.ebk.channel.android.hananbank';
+                            } else {
+                                window.location.href = 'https://apps.apple.com/kr/app/id292167245';
+                            }
+                        }
+                    }
+                }, 1500);
+            } else {
+                // PC에서는 계좌번호 복사
+                copyAccount();
+            }
+            createMultipleHearts();
+        }
+
+        // 계좌 복사
+        function copyAccount() {
+            const accountNumber = '36691024309407';
+            navigator.clipboard.writeText(accountNumber).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                const text = document.getElementById('copyText');
+                
+                btn.classList.add('copied');
+                text.innerText = '복사 완료!';
+                
+                // 하트 이펙트
+                for (let i = 0; i < 3; i++) {
+                    setTimeout(() => createHeart(btn), i * 100);
+                }
+                
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    text.innerText = '계좌번호 복사하기';
+                }, 2000);
+            }).catch(() => {
+                alert('계좌번호: 36691024309407');
+            });
+        }
+
+        // 카카오페이
+        function openKakaoPay() {
+            // 카카오페이 QR 송금 페이지로 바로 이동
+            window.location.href = 'https://qr.kakaopay.com/FPkFkMJb4';
+            createMultipleHearts();
+        }
+
+        // 토스
+        function openToss() {
+            const amount = selectedAmount || 10000;
+            
+            // 토스 딥링크 (하나은행 코드: 081)
+            const tossUrl = `supertoss://send?amount=${amount}&bank=081&accountNo=36691024309407&receiverName=${encodeURIComponent('구건우')}`;
+            
+            // 모바일 체크
+            if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                window.location.href = tossUrl;
+                
+                setTimeout(() => {
+                    if (document.hasFocus()) {
+                        // 앱이 없으면 토스 설치 페이지로
+                        if (confirm('토스 앱을 설치하시겠습니까?')) {
+                            if (/Android/i.test(navigator.userAgent)) {
+                                window.location.href = 'https://play.google.com/store/apps/details?id=viva.republica.toss';
+                            } else {
+                                window.location.href = 'https://apps.apple.com/kr/app/id839333328';
+                            }
+                        }
+                    }
+                }, 1500);
+            } else {
+                // PC에서는 토스 웹 송금 링크
+                window.open(`https://toss.me/구건우?amount=${amount}`, '_blank');
+            }
+            createMultipleHearts();
+        }
+
+        // 하트 생성
+        function createHeart(element) {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.innerHTML = ['💚', '🌿', '🍀', '✨', '🌟'][Math.floor(Math.random() * 5)];
+            
+            const rect = element.getBoundingClientRect();
+            heart.style.left = rect.left + rect.width / 2 + 'px';
+            heart.style.top = rect.top + rect.height / 2 + 'px';
+            
+            document.getElementById('hearts').appendChild(heart);
+            
+            setTimeout(() => heart.remove(), 4000);
+        }
+
+        // 여러 하트 생성
+        function createMultipleHearts() {
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'heart';
+                    heart.innerHTML = ['💚', '🌿', '🍀', '✨', '🌟'][Math.floor(Math.random() * 5)];
+                    heart.style.left = (20 + Math.random() * 60) + '%';
+                    heart.style.top = '50%';
+                    document.getElementById('hearts').appendChild(heart);
+                    setTimeout(() => heart.remove(), 4000);
+                }, i * 200);
+            }
+        }
+
+        // 초기화
+        window.addEventListener('load', () => {
+            createParticles();
+            setTimeout(() => createMultipleHearts(), 1000);
+        });
+    </script>
+</body>
+</html>
